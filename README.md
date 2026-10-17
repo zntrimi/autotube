@@ -1,172 +1,182 @@
 # AutoTube
 
-Android Auto の車載画面で YouTube を再生するアプリ。スマホでキューに積み、車側は再生するだけ。
+[![Build](https://github.com/zntrimi/autotube/actions/workflows/build.yml/badge.svg)](https://github.com/zntrimi/autotube/actions/workflows/build.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/zntrimi/autotube?include_prereleases)](https://github.com/zntrimi/autotube/releases)
 
-> **English summary:** AutoTube plays YouTube videos on the Android Auto head unit. It registers as a *navigation* app (Car App Library) to get a drawing surface and renders video with ExoPlayer; streams are resolved with NewPipeExtractor. Not affiliated with Google or YouTube. It does **not** stop video while driving — use at your own risk and follow local laws. Real cars only list Car App Library apps installed from the Play Store, so sideloaded builds must be installed with `adb install -i com.android.vending` (see below). Licensed under GPL-3.0.
+**Play YouTube videos on your Android Auto head unit.** Queue videos on your phone; the car just plays them.
 
-## スクリーンショット
+[日本語の README はこちら](README.ja.md)
 
-**車（Android Auto）**: 全画面と、分割表示（左がメディアカード、右に映像）
+> [!WARNING]
+> **Video keeps playing while the car is moving.** AutoTube presents itself to Android Auto as a navigation app, so Android Auto's driving restrictions do not apply. Watching video while driving is dangerous and illegal in many places. **The driver must not watch while driving.** You use this app entirely at your own risk.
+>
+> AutoTube is an **unofficial** app and is not affiliated with Google or YouTube. It does not use the official YouTube API; it extracts streams with [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor). This is a gray area under YouTube's Terms of Service, and YouTube changes can break it at any time.
+
+## Screenshots
+
+**Car (Android Auto)** — full screen, and the split dashboard (media card on the left, video on the right)
 
 <p>
-  <img src="docs/screenshots/car-fullscreen.png" width="49%" alt="車の画面（全画面）">
-  <img src="docs/screenshots/car-split.png" width="49%" alt="車の画面（分割表示）">
+  <img src="docs/screenshots/car-fullscreen.png" width="49%" alt="Car screen, full screen">
+  <img src="docs/screenshots/car-split.png" width="49%" alt="Car screen, split dashboard">
 </p>
 
-**スマホ**: キュー（車で再生中）・アプリ内検索・設定
+**Phone** — queue (while playing in the car), in-app search, settings
 
 <p>
-  <img src="docs/screenshots/phone-queue.png" width="32%" alt="キュー">
-  <img src="docs/screenshots/phone-search.png" width="32%" alt="検索">
-  <img src="docs/screenshots/phone-settings.png" width="32%" alt="設定">
+  <img src="docs/screenshots/phone-queue.png" width="32%" alt="Queue">
+  <img src="docs/screenshots/phone-search.png" width="32%" alt="Search">
+  <img src="docs/screenshots/phone-settings.png" width="32%" alt="Settings">
 </p>
 
-<sub>画面に映っている動画は Blender Studio のオープンムービー（Spring・Coffee Run・Sprite Fright・CHARGE、© Blender Foundation, [CC BY](https://creativecommons.org/licenses/by/4.0/)）です。車の画面は Android Auto Desktop Head Unit、スマホは Galaxy Z Fold とエミュレータで撮影。</sub>
+<sub>Videos shown are Blender Studio open movies (Spring, Coffee Run, Sprite Fright, CHARGE — © Blender Foundation, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>). Car screenshots from the Android Auto Desktop Head Unit; phone screenshots from a Galaxy Z Fold and the Android emulator.</sub>
 
-## ⚠️ 先に読んでください
+## Features
 
-- **走行中も映像は止まりません。** このアプリは Android Auto に「ナビアプリ」として振る舞うので、Android Auto の走行中制限が効きません。運転中に画面を見ることは危険で、多くの国・地域で法令違反です。**運転者は走行中に見ないでください。** 使い方はすべて自己責任です
-- **Google・YouTube とは無関係の非公式アプリです。** YouTube の公式 API ではなく、[NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor) でストリームを取り出して直接再生します。YouTube の利用規約上はグレーで、YouTube 側の変更でいつでも動かなくなる可能性があります
-- **Google Play では一般公開していません（できません）。** 理由と入れ方は「[インストール](#インストール)」を見てください
+- **Search YouTube inside the app** (with suggestions) and add to the queue. You can also add from the YouTube app's *Share* menu, by copying a URL, or by pasting a playlist URL (up to 200 videos).
+- **Resumes where you left off** when you connect to the car (video and position). Steering-wheel play / next / previous keys and the phone's notification / lock screen controls work too.
+- **No ads** — the video file is played directly. Sponsor segments and self-promotion inside videos are skipped with [SponsorBlock](https://sponsor.ajay.app) (can be turned off).
+- **Built not to stall**: avoids YouTube's per-request throttling, buffers up to 5 minutes ahead, recovers automatically from tunnels and dead zones, swaps expired stream URLs in the background when your network changes (home Wi-Fi → 5G), and retries on its own when something fails.
+- Material 3 phone UI: swipe to remove / mark watched (with undo), drag to reorder.
 
-## できること
+> [!NOTE]
+> The app's UI is currently **Japanese only**. Translations are very welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-- **アプリ内で YouTube を検索してキューに追加**（入力中の候補つき）。YouTube アプリの「共有」から、URL のコピーから、再生リストの URL（最大 200 本）からも追加できる
-- **車で開くと前回の続き（動画と位置）から自動で再生**。ステアリングの再生・次・前のキー、スマホの通知・ロック画面からも操作できる
-- **広告が出ない**（動画ファイルを直接再生するため）。動画に埋め込まれたスポンサー枠・宣伝は [SponsorBlock](https://sponsor.ajay.app) で自動で飛ばす（設定で切れる）
-- **止まりにくい**: YouTube の帯域制限を避ける取り方、最大 5 分の先読み、圏外・トンネルからの自動復帰、回線が替わったとき（家の Wi-Fi → 5G）の URL の差し替え、失敗したときの自動やり直し
-- スマホ側は Material 3。スワイプで削除・視聴済み、ドラッグで並べ替え、取り消し可能
+## Installation
 
-## インストール
+### Why it has to look like it came from the Play Store
 
-### なぜ Play ストアから入れないといけないのか（サイドロードの制約）
+In a real car, Android Auto only lists Car App Library apps (navigation, parking, charging, …) whose **installer is the Google Play Store** (`com.android.vending`).
 
-実車の Android Auto は、Car App Library 製のアプリ（このアプリのようなナビ・駐車・充電などのカテゴリ）を、**インストール元が Google Play ストアのものだけ**ランチャーに出します。端末に記録された「インストール元パッケージ」が `com.android.vending` かどうかで判定しています。
+- Installing the APK directly, or from F-Droid, Galaxy Store or any other store → **the app does not show up in the car** (it does show up in the Desktop Head Unit).
+- Android Auto's developer setting *Unknown sources* only applies to media and messaging apps, not to this kind of app.
+- Publishing on Google Play is not realistic either: an app that plays YouTube without ads, inside a navigation surface, would not pass review.
 
-- APK を直接入れる、F-Droid・Galaxy Store などほかのストアから入れる → **どれも実車には出ません**（DHU には出る）
-- Android Auto の開発者設定「提供元不明のアプリ」は、メディア・メッセージ系のアプリにしか効きません。このアプリには関係ありません
-- かといって Google Play での一般公開は、YouTube の規約・広告を出さないこと・ナビを名乗って動画を出すことから、審査をまず通りません
+### Option 1: install with adb, setting the installer to Play (recommended)
 
-### 方法 1: adb でインストール元を指定して入れる（おすすめ）
-
-PC から adb で入れるときにインストール元を `com.android.vending` と指定すると、Play から入れたのと同じ扱いになり、実車に出ます。
+If you install over adb and declare the Play Store as the installer, Android Auto treats the app as if it came from Play:
 
 ```bash
 adb install -r -i com.android.vending AutoTube.apk
 ```
 
-- スマホの「開発者向けオプション」で USB デバッグ（またはワイヤレスデバッグ）をオンにしておく
-- **更新のたびにこの方法で入れ直す**必要があります（スマホ上で APK を開いて上書きすると、インストール元が変わって車に出なくなる）
-- 入れ直したら車との接続をやり直す（Android Auto はアプリ一覧を接続開始時にしか作り直さない）
+1. Enable *Developer options* → *USB debugging* (or *Wireless debugging*) on the phone.
+2. Download `AutoTube-<version>.apk` from [Releases](https://github.com/zntrimi/autotube/releases) (or [build it yourself](#building)).
+3. Run the command above, then **reconnect to the car** — Android Auto only rebuilds its app list when a connection starts.
 
-APK は下の「[ビルド](#ビルド)」で作ります。
+You need to install **every update the same way**. Opening an APK on the phone to update it changes the installer, and the app disappears from the car.
 
-### 方法 2: 自分の Play Console の内部テストに上げる
+### Option 2: your own Play Console internal testing track
 
-Google Play Console の開発者アカウント（登録料 25 ドル）があれば、内部テストトラックに上げて自分だけに配れます。審査なしで Play から入るので、更新もスマホだけで済みます。
+With a Google Play developer account (one-time US$25 fee) you can upload your own build to the *internal testing* track and install it from Play. Internal testing has no review, and updates then only need the phone.
 
-1. `app/build.gradle.kts` の `applicationId` を自分のものに変える（`com.autotube.zentaro` は作者のアプリ枠なので使えない）
-2. Play Console でアプリを作成し、内部テストのテスターに自分の Google アカウントを登録して、オプトインリンクを一度開く
-3. `scripts/release.sh` で AAB を作って上げる（`--upload` を使うなら下の「[リリース](#リリース作者向け)」を参照）
+1. Change `applicationId` in `app/build.gradle.kts` to your own (`com.autotube.zentaro` belongs to the maintainer's Play account).
+2. Create the app in Play Console, add yourself as an internal tester and open the opt-in link once.
+3. Build an AAB with `scripts/release.sh` and upload it (see [Releasing](#releasing)).
 
-## 使い方
+## Usage
 
-### 追加
+### Adding videos
 
-- 右上の 🔍 で検索して ＋。⋮ から「今すぐ再生」「次に再生」
-- YouTube アプリで動画を開き「共有」→ AutoTube
-- URL をコピーしてから AutoTube を開くと、キューの上に追加カードが出る。検索欄に URL を貼っても追加できる
-- **再生リストの URL**（`youtube.com/playlist?list=…`）を貼るとまとめて追加（最大 200 本、重複は飛ばす）
+- Tap 🔍 (top right), search, and tap **+**. Use **⋮** for *Play now* / *Play next*.
+- In the YouTube app: *Share* → AutoTube.
+- Copy a YouTube URL, then open AutoTube — an *Add* card appears above the queue. You can also paste a URL into the search box.
+- Paste a **playlist URL** (`youtube.com/playlist?list=…`) to add the whole list (up to 200, duplicates skipped).
 
-### 車で
+### In the car
 
-- 車に繋いで AutoTube を開くと、**前回の続き（動画と位置）から自動で再生**（設定で切れる）
-- 右上: 前・再生/一時停止・次。右下: −10 秒・+30 秒・停止
-- ステアリングの再生・次・前のキーも効く
-- 見終わった動画は視聴済みになり、自動送りでは飛ばす。次の動画が無ければ止まる
-- 左上のカードは動画が替わって 5 秒だけタイトルを出し、あとは消える（一時停止・読み込み中・エラー・キューが空のときは出しっぱなし）
-- Android Auto はナビ画面のボタンを数秒で隠す。隠れているときの 1 回目のタップは再表示だけ
+- Open AutoTube and it **continues from where you left off** (can be turned off in settings).
+- Top right: previous / play-pause / next. Right side: −10 s / +30 s / stop.
+- Watched videos are skipped by auto-advance. Playback stops when there is nothing left.
+- The card in the top-left shows the title for 5 seconds after a video changes, and stays while paused, loading, on error, or when the queue is empty.
+- Android Auto hides navigation-screen buttons after a few seconds; the first tap only brings them back.
 
-### スマホで
+### On the phone
 
-- **キュー**: 上に再生中のパネル（車に繋いでいる間はサムネイルと「車で再生中」）。タップで再生、右へスワイプで視聴済み、左へスワイプで削除（どちらも取り消せる）、右端のつまみで並べ替え、⋮ で次に再生・先頭へ・YouTube で開く
-- **検索**: 入力中は候補、結果はスクロールで続きを読む。ライブ配信は再生できないので出さない
-- **設定**: 画質の上限（360p／720p／1080p）、自動再生、スポンサー枠スキップ、バッテリー最適化、困ったとき（下記）
-- スマホ側の画面を閉じても車での再生は続く
+- **Queue**: the now-playing panel at the top (shows "playing in the car" while connected). Tap to play, swipe right to mark watched, swipe left to remove (both can be undone), drag the handle to reorder, **⋮** for *Play next* / *Move to top* / *Open in YouTube*.
+- **Search**: suggestions while typing, infinite scroll. Live streams are hidden because they can't be played.
+- **Settings**: maximum quality (360p / 720p / 1080p), auto-play on connect, SponsorBlock, battery optimization, and troubleshooting.
+- Playback in the car continues when you close the phone app.
 
-### 止まったとき
+### When playback stops
 
-ふだんは何もしなくても自動で立て直します。
+Normally nothing is needed — the app recovers by itself:
 
-| 状況 | アプリの動き |
+| Situation | What the app does |
 |---|---|
-| 圏外・トンネル | 「回線待ち」と出し、戻ったら続きから |
-| URL の失効・回線の切り替わり | 裏で取り直して止まらずに続く |
-| 削除・非公開などで再生できない動画 | 飛ばして次へ。一覧に「再生できません」と出る |
-| それ以外の失敗 | 「再生できませんでした」と出し、10 → 20 → 40 → 60 秒の間隔で自動でやり直す |
+| No signal / tunnel | Shows "waiting for network" and continues when it's back |
+| Stream URL expired / network changed | Fetches a new URL in the background and keeps playing |
+| Video deleted, private, etc. | Skips to the next video and marks it "unavailable" in the queue |
+| Anything else | Shows "couldn't play" and retries automatically after 10 → 20 → 40 → 60 s |
 
-手で直すときは **▶ を押す**（車でもスマホでも、取り直して同じ位置から再生する）。それでも駄目なら設定の「困ったとき」を上から順に: 再生を立て直す → 再生をすべてリセット → アプリを再起動。直らなければ「ログを見る・共有する」からログを取れます。
+To fix it by hand, **press ▶** (in the car or on the phone) — it reloads and resumes at the same position. If that doesn't help, go to *Settings (設定) → Troubleshooting (困ったとき)* and try, in order: *Rebuild playback (再生を立て直す)* → *Reset playback (再生をすべてリセット)* → *Restart app (アプリを再起動)*. Use *View / share logs (ログを見る・共有する)* to attach logs to a bug report.
 
-## 仕組み
+## How it works
 
-**ナビカテゴリを名乗って `NavigationTemplate` の Surface をもらい**、そこに ExoPlayer で描画します。Canvas 描画と MediaCodec は同じ Surface に同居できないので、車側の Surface はまるごとプレイヤーに渡し、タイトルや状態は NavigationInfo のカードで出しています。
+AutoTube **declares itself as a navigation app to get the `NavigationTemplate` surface**, and renders video onto it with ExoPlayer. Canvas drawing and MediaCodec can't share a surface, so the whole car surface is handed to the player; the title and status are shown in the NavigationInfo card instead.
 
-| 役割 | 実装 |
+| Part | Implementation |
 |---|---|
-| ストリーム URL の取得 | [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor)（`youtube/YouTubeExtractor.kt`）。映像のみ MP4（設定の上限、既定 720p。AV1 は使わず、同じ高さなら 30fps を優先）＋ M4A 音声を `MergingMediaSource` で合成。失敗したら形式を問わない合成 → 音声込み 360p プログレッシブの順にフォールバック。結果は 45 分キャッシュし、再生中に次の動画の分を先読みする |
-| 再生 | media3 ExoPlayer（`player/PlayerEngine.kt`）。車の Surface が最優先、無ければスマホの PlayerView |
-| MediaSession | `player/PlaybackService.kt`（media3 `MediaSessionService`）。「次」「前」は `QueuePlayer` でこちらのキューに向ける。再生中はフォアグラウンドサービス |
-| 帯域制限よけ | YouTube は 10MB を超える範囲の要求を最初の 8〜10MB だけ速く送り、あとは約 3.3Mbps に絞る。ExoPlayer は末尾なしの範囲で読み続けるので、`player/ChunkedDataSource.kt` で 4MB ずつの範囲指定に分けて取る（区切れば毎回全速）。バッファは最大 5 分先（96MB まで） |
-| 回線落ち対策 | 回線のエラー（切断・タイムアウト・5xx）は読み込みの中で何回でもやり直し、プレイヤーまで上げない（上げると先読みした分を捨てて止まる）。ストリーム URL は取得時の IP でしか使えないので、403 を受けたら `ChunkedDataSource` が裏で同じ itag の新しい URL に差し替える。圏外の間は画質を落とさない |
-| 詰まり・失敗 | 映像の縮小・配置（エフェクト）が失敗したら準備し直し、2 回失敗したら以後は上下を切った全面表示。バッファが 20 秒進まなければ候補を一段落とす（最大 3 回）。打つ手が尽きたら間隔を延ばしながら自動でやり直す |
-| オーディオフォーカス | 再生開始時に取得して他のアプリを止めるが、**奪われても止まらない**（YouTube アプリで次の動画を開いて共有するたびに車側が止まるのを避けるため） |
-| 縦横比・配置 | Surface に収まる最大サイズ（`Presentation` エフェクト）。分割表示ではホストの可視領域に合わせて右カードの中に収める（`CarLayoutTransformation`） |
-| キュー | `queue/QueueStore.kt`。`filesDir/queue.json` に保存。再生位置・視聴済み・再生できない印も持つ |
-| スマホの画面 | Jetpack Compose + Material 3（`phone/ui/`）。並べ替えは [Reorderable](https://github.com/Calvin-LL/Reorderable) |
-| スポンサー枠 | `youtube/SponsorBlock.kt`。設定でオンのとき、再生する動画の ID が SponsorBlock のサーバーへ送られる |
+| Stream URLs | [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor) (`youtube/YouTubeExtractor.kt`). Video-only MP4 (up to the configured height, 720p by default; no AV1; prefers 30 fps at the same height) + M4A audio, merged with `MergingMediaSource`. Falls back to any-format merge, then 360p progressive. Results are cached for 45 minutes and the next video is prefetched. |
+| Playback | media3 ExoPlayer (`player/PlayerEngine.kt`). The car surface wins; otherwise the phone's PlayerView. |
+| MediaSession | `player/PlaybackService.kt` (media3 `MediaSessionService`). Next / previous are routed to AutoTube's own queue (`QueuePlayer`). Runs as a foreground service while playing. |
+| Throttling | YouTube sends only the first 8–10 MB of a request for more than ~10 MB at full speed, then throttles to about 3.3 Mbps. ExoPlayer normally reads with an open-ended range, so `player/ChunkedDataSource.kt` splits reads into 4 MB ranges, each served at full speed. Buffers up to 5 minutes (96 MB). |
+| Network loss | Network errors (disconnects, timeouts, 5xx) are retried inside the loader indefinitely and never surface to the player (which would discard the buffer). Stream URLs are bound to the client IP, so on 403 `ChunkedDataSource` fetches a fresh URL for the same itag in the background. Quality is not lowered while offline. |
+| Stalls / failures | If the video effect pipeline fails, re-prepare; after two failures, fall back to center-crop. If the buffer doesn't grow for 20 s, step down one candidate (up to 3 times). When everything fails, retry with increasing intervals. |
+| Audio focus | Requested when playback starts, but **losing it does not pause** (so sharing the next video from the YouTube app doesn't stop the car). |
+| Layout | Largest size that fits the surface (`Presentation` effect). In the split dashboard, fits into the host's visible area (`CarLayoutTransformation`). |
+| Queue | `queue/QueueStore.kt`, saved to `filesDir/queue.json` with position, watched and unavailable flags. |
+| Phone UI | Jetpack Compose + Material 3 (`phone/ui/`). Reordering with [Reorderable](https://github.com/Calvin-LL/Reorderable). |
+| SponsorBlock | `youtube/SponsorBlock.kt`. When enabled, the ID of the video being played is sent to the SponsorBlock server. |
 
-## ビルド
+## Building
 
-JDK 21 と Android SDK が要ります。
+Requires JDK 21 and the Android SDK.
 
 ```bash
-export JAVA_HOME=/path/to/jdk-21        # macOS + Homebrew なら /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
-echo "sdk.dir=/path/to/android-sdk" > local.properties
+export JAVA_HOME=/path/to/jdk-21
+echo "sdk.dir=/path/to/android-sdk" > local.properties   # or set ANDROID_HOME
 ./gradlew :app:assembleDebug
 adb install -r -i com.android.vending app/build/outputs/apk/debug/app-debug.apk
 ```
 
-- debug 版はパッケージ名 `com.autotube.zentaro.debug`・表示名「AutoTube 開発版」で、release 版と並んで入る（キューも別）
-- 署名: `~/.android/personal-release.properties`（`storeFile` / `storePassword` / `keyAlias` / `keyPassword`）があればその鍵で debug・release とも署名し、無ければ Android の debug 鍵で署名する。鍵はリポジトリに入れない
-- 実車の Android Auto はデバッグ可能なアプリを候補から外すので、**実車で使うのは release 版**（`./gradlew :app:assembleRelease`）。DHU なら debug 版でも出る
-- NewPipeExtractor は、YouTube の変更に追従した未リリースの修正版を `localMaven/` に同梱している（作り方とソースは `localMaven/README.md`）。上流で新しい版が出たら `gradle/libs.versions.toml` を戻す
+- The debug build is `com.autotube.zentaro.debug`, labelled "AutoTube 開発版" (dev build), and installs side by side with the release build (separate queue).
+- **Real cars ignore debuggable apps**, so use the release build in a car (`./gradlew :app:assembleRelease`). The Desktop Head Unit shows debug builds too.
+- Signing: if `~/.android/personal-release.properties` (`storeFile` / `storePassword` / `keyAlias` / `keyPassword`) exists, both debug and release are signed with that key; otherwise with the Android debug key. Keys never go into the repository.
+- NewPipeExtractor: an unreleased fix that keeps up with a recent YouTube change is vendored in `localMaven/` (sources included; see [`localMaven/README.md`](localMaven/README.md)). Switch back to an upstream release in `gradle/libs.versions.toml` once one is available.
 
-### 車なしでテストする（DHU）
+### Testing without a car (Desktop Head Unit)
 
-Android SDK の「Android Auto Desktop Head Unit Emulator」（`extras;google;auto`）を使います。
+Use the *Android Auto Desktop Head Unit Emulator* from the Android SDK (`extras;google;auto`).
 
-1. スマホの Android Auto の設定で「バージョン」を 10 回タップして開発者設定を有効にし、右上 ⋮ →「Start head unit server」を押す（DHU が切れるたびに押し直す）
-2. スマホを adb で繋いで（USB でもワイヤレスデバッグでもよい）:
+1. In Android Auto settings on the phone, tap *Version* 10 times to enable developer settings, then **⋮ → Start head unit server** (press it again every time the DHU disconnects).
+2. Connect the phone with adb (USB or wireless debugging) and run:
 
 ```bash
 adb forward tcp:5277 tcp:5277
-$ANDROID_SDK/extras/google/auto/desktop-head-unit
+$ANDROID_HOME/extras/google/auto/desktop-head-unit
 ```
 
-DHU の標準入力に `screenshot out.png`・`tap 400 240`・`keycode media_next` などを送ると操作できる（`help` で一覧）。接続中にアプリを `adb install` で入れ直すと接続が切れるので、入れ直したらサーバーを起動し直す。
+You can drive the DHU through its stdin: `screenshot out.png`, `tap 400 240`, `keycode media_next`, … (`help` lists everything). Reinstalling the app with `adb install` while connected drops the connection; start the head unit server again afterwards.
 
-### リリース（作者向け）
+### Releasing
 
-`scripts/release.sh` は AAB を作ってデスクトップに置く。`--upload` を付けると Play の内部テストトラックに上げ、繋がっているスマホの Play ストアで更新まで進める（`scripts/play-track.sh`）。アップロードには、Play Console に招待したサービスアカウントと、それになりすませる gcloud アカウントを環境変数で渡す:
+- **GitHub release (APK):** `scripts/github-release.sh <version>` builds a release APK and publishes it as `AutoTube-<version>.apk` with `gh release create`.
+- **Play internal testing (maintainer):** `scripts/release.sh` builds an AAB. With `--upload`, it uploads to the internal testing track and updates the connected phone via the Play Store (`scripts/play-track.sh`). Set the service account invited in Play Console and a gcloud account that can impersonate it:
 
 ```bash
 export PLAY_SERVICE_ACCOUNT=play-uploader@<project>.iam.gserviceaccount.com
-export PLAY_GCLOUD_ACCOUNT=<なりすまし権限を持つ gcloud アカウント>
+export PLAY_GCLOUD_ACCOUNT=<gcloud account with Service Account Token Creator>
 scripts/release.sh --upload
 ```
 
-## ライセンス
+## Contributing
 
-[GPL-3.0](LICENSE)。GPL-3.0 の [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor) を組み込んでいるため、このアプリも同じライセンスです。
+Bug reports, translations and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
-YouTube は Google LLC の商標です。このプロジェクトは Google・YouTube とは関係ありません。
+## License
+
+[GPL-3.0](LICENSE). AutoTube bundles [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor), which is GPL-3.0, so the app is distributed under the same license.
+
+YouTube is a trademark of Google LLC. This project is not affiliated with, endorsed by, or sponsored by Google or YouTube.

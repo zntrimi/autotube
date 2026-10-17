@@ -1,0 +1,63 @@
+name: Bug report
+description: Something doesn't work (playback stops, errors, UI problems, …)
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! 日本語でも大丈夫です。
+        If **every** video fails to play, YouTube has probably changed something — please check [NewPipeExtractor's issues](https://github.com/TeamNewPipe/NewPipeExtractor/issues) too.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add …
+        2. Connect to the car / DHU
+        3. Press +30 s three times
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      options:
+        - Real car
+        - Desktop Head Unit (DHU)
+        - Phone only
+    validations:
+      required: true
+  - type: input
+    id: car
+    attributes:
+      label: Car / head unit
+      description: Make, model and year, or the DHU version. Wired or wireless Android Auto?
+  - type: input
+    id: phone
+    attributes:
+      label: Phone, Android version, Android Auto version
+      placeholder: Pixel 9, Android 17, Android Auto 15.4
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: AutoTube version
+      description: The first line of the log shows it (e.g. `start 0.1.29870231`).
+  - type: input
+    id: video
+    attributes:
+      label: Video URL (if only some videos are affected)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: "In the app: Settings (設定) → View / share logs (ログを見る・共有する) → 共有. Check for anything you'd rather not share before posting."
+      render: text

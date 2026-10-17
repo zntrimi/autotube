@@ -18,7 +18,8 @@ android {
         // scripts/release.sh が VERSION_CODE（ビルド時刻の分）を渡す。無ければ 1。
         val versionFromEnv = providers.environmentVariable("VERSION_CODE").orNull?.toIntOrNull() ?: 1
         versionCode = versionFromEnv
-        versionName = "0.1.$versionFromEnv"
+        // GitHub のリリースは scripts/github-release.sh が VERSION_NAME（例 0.2.0）を渡す。
+        versionName = providers.environmentVariable("VERSION_NAME").orNull ?: "0.1.$versionFromEnv"
     }
 
     // 署名は debug/release とも ~/.android/personal-release.jks（リポジトリ外）。
