@@ -1,0 +1,49 @@
+# 依存のバージョンはここだけで決める。値は 2026-09-15 時点の安定版。
+
+[versions]
+agp = "9.3.1"
+carApp = "1.7.0"
+coreKtx = "1.19.0"
+lifecycle = "2.11.0"
+activity = "1.13.0"
+coroutines = "1.11.0"
+media3 = "1.11.1"
+newpipe = "v0.26.5-nsig"
+okhttp = "5.5.0"
+# Compose。kotlin は AGP 9.3 に組み込まれた Kotlin と揃える（compose コンパイラプラグインのバージョンになる）。
+kotlin = "2.4.10"
+composeBom = "2026.09.00"
+reorderable = "2.5.1"
+
+[libraries]
+androidx-car-app = { group = "androidx.car.app", name = "app", version.ref = "carApp" }
+androidx-car-app-projected = { group = "androidx.car.app", name = "app-projected", version.ref = "carApp" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# 再生。exoplayer が本体、effect は車の Surface に合わせたレターボックス（Presentation）、ui はスマホ側の確認用 PlayerView。
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
+androidx-media3-effect = { group = "androidx.media3", name = "media3-effect", version.ref = "media3" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
+# MediaSession。車のステアリングキー・スマホの通知/ロック画面から操作するために必要。
+androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
+
+# YouTube のストリーム URL 抽出。公式 API では自前プレイヤーで再生できないので、これに頼る。
+# 上流の v0.26.5 は 2026-09 の YouTube 変更で壊れたので、修正 PR を取り込んだローカルビルド（localMaven/）を使う。
+newpipe-extractor = { group = "net.newpipe", name = "extractor", version.ref = "newpipe" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+
+# スマホ側の画面（Material 3）。アイコンは material-icons を入れず res/drawable のベクターを使う。
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+# キューのつまんで並べ替え（LazyColumn には標準で無い）。
+reorderable = { group = "sh.calvin.reorderable", name = "reorderable", version.ref = "reorderable" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

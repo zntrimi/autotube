@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>net.newpipe</groupId>
+  <artifactId>extractor</artifactId>
+  <versioning>
+    <latest>v0.26.5-nsig</latest>
+    <release>v0.26.5-nsig</release>
+    <versions>
+      <version>v0.26.5-nsig</version>
+    </versions>
+    <lastUpdated>20260921031337</lastUpdated>
+  </versioning>
+</metadata>

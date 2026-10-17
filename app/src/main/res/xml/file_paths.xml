@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ログの共有用。cacheDir/share/ 以下だけを外に見せる。 -->
+<paths>
+    <cache-path name="share" path="share/" />
+</paths>

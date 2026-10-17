@@ -1,0 +1,144 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "net.newpipe",
+    "module": "extractor",
+    "version": "v0.26.5-nsig",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.7.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "extractor-v0.26.5-nsig.jar",
+          "url": "extractor-v0.26.5-nsig.jar",
+          "size": 810323,
+          "sha512": "334f78ed7da2013ff97ea51a1ba54d03f9d59bb72ccae7ebe76f8b5e757aeb19031716c95c1e80f79e965caba0893ea07b03d6be492b7f08ee14853954f879ac",
+          "sha256": "ef81e5939e8dcdd1141527b6ecfb3b040009cf3542c87e7f92162862fc24830e",
+          "sha1": "26627f9600900802c5ceb7b7bcdfb8bac245a30e",
+          "md5": "f868c20edae3c540164240094eebcc37"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.github.TeamNewPipe",
+          "module": "nanojson",
+          "version": {
+            "requires": "e9d656ddb49a412a5a0a5d5ef20ca7ef09549996"
+          }
+        },
+        {
+          "group": "org.jsoup",
+          "module": "jsoup",
+          "version": {
+            "requires": "1.23.1"
+          }
+        },
+        {
+          "group": "com.google.code.findbugs",
+          "module": "jsr305",
+          "version": {
+            "requires": "3.0.2"
+          }
+        },
+        {
+          "group": "com.google.protobuf",
+          "module": "protobuf-javalite",
+          "version": {
+            "requires": "4.36.1"
+          }
+        },
+        {
+          "group": "org.mozilla",
+          "module": "rhino",
+          "version": {
+            "requires": "1.8.1"
+          }
+        },
+        {
+          "group": "org.mozilla",
+          "module": "rhino-engine",
+          "version": {
+            "requires": "1.8.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "extractor-v0.26.5-nsig.jar",
+          "url": "extractor-v0.26.5-nsig.jar",
+          "size": 810323,
+          "sha512": "334f78ed7da2013ff97ea51a1ba54d03f9d59bb72ccae7ebe76f8b5e757aeb19031716c95c1e80f79e965caba0893ea07b03d6be492b7f08ee14853954f879ac",
+          "sha256": "ef81e5939e8dcdd1141527b6ecfb3b040009cf3542c87e7f92162862fc24830e",
+          "sha1": "26627f9600900802c5ceb7b7bcdfb8bac245a30e",
+          "md5": "f868c20edae3c540164240094eebcc37"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "extractor-v0.26.5-nsig-sources.jar",
+          "url": "extractor-v0.26.5-nsig-sources.jar",
+          "size": 508945,
+          "sha512": "2f8ce75a3d78280b243415f56cc4979ba3884d4ecb2c094ffc489662c3f792ce326526047280047e4f02c4ffa12b2ca88d3e8ccf77d5cf5babc1459d292ef65d",
+          "sha256": "f77bbb7b9687a2ee34d64e2cb445fc9a9ca24aa2d98f60cfd3d383d7a7316134",
+          "sha1": "c766721287ddf5f75ecf230e91a2b08ec44d1e20",
+          "md5": "e43b5458de1af8df4a0f06f910e95009"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "extractor-v0.26.5-nsig-javadoc.jar",
+          "url": "extractor-v0.26.5-nsig-javadoc.jar",
+          "size": 1719846,
+          "sha512": "7a14659622a4482159f5ddbbcda21c700143ec32acabaad9d9843a667dba437d111576783b6e6aa53afdd5206a71e5b013b39feb5581fde77085f9aa7935156d",
+          "sha256": "ea9f88fab812a649278ae29f3cce2c12bf10d6902939692c821b9ee88e295632",
+          "sha1": "11de227b40074496906eceeac94311c461cf681f",
+          "md5": "16ac5d2f49de76ee714be793f221de00"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- スマホ側の画面は Compose（Material 3）で描くので、ウィンドウはアクションバー無しの素地だけ。 -->
+    <style name="Theme.AutoTube" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
