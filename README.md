@@ -4,6 +4,25 @@ Android Auto の車載画面で YouTube を再生するアプリ。スマホで�
 
 > **English summary:** AutoTube plays YouTube videos on the Android Auto head unit. It registers as a *navigation* app (Car App Library) to get a drawing surface and renders video with ExoPlayer; streams are resolved with NewPipeExtractor. Not affiliated with Google or YouTube. It does **not** stop video while driving — use at your own risk and follow local laws. Real cars only list Car App Library apps installed from the Play Store, so sideloaded builds must be installed with `adb install -i com.android.vending` (see below). Licensed under GPL-3.0.
 
+## スクリーンショット
+
+**車（Android Auto）**: 全画面と、分割表示（左がメディアカード、右に映像）
+
+<p>
+  <img src="docs/screenshots/car-fullscreen.png" width="49%" alt="車の画面（全画面）">
+  <img src="docs/screenshots/car-split.png" width="49%" alt="車の画面（分割表示）">
+</p>
+
+**スマホ**: キュー（車で再生中）・アプリ内検索・設定
+
+<p>
+  <img src="docs/screenshots/phone-queue.png" width="32%" alt="キュー">
+  <img src="docs/screenshots/phone-search.png" width="32%" alt="検索">
+  <img src="docs/screenshots/phone-settings.png" width="32%" alt="設定">
+</p>
+
+<sub>画面に映っている動画は Blender Studio のオープンムービー（Spring・Coffee Run・Sprite Fright・CHARGE、© Blender Foundation, [CC BY](https://creativecommons.org/licenses/by/4.0/)）です。車の画面は Android Auto Desktop Head Unit、スマホは Galaxy Z Fold とエミュレータで撮影。</sub>
+
 ## ⚠️ 先に読んでください
 
 - **走行中も映像は止まりません。** このアプリは Android Auto に「ナビアプリ」として振る舞うので、Android Auto の走行中制限が効きません。運転中に画面を見ることは危険で、多くの国・地域で法令違反です。**運転者は走行中に見ないでください。** 使い方はすべて自己責任です
