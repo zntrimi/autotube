@@ -1,5 +1,6 @@
 package dev.imaizentarou.autotube.phone.ui
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,8 +53,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -90,6 +93,7 @@ fun SearchScreen(
     var loadingMore by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var suggestions by remember { mutableStateOf(emptyList<String>()) }
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val keyboard = LocalSoftwareKeyboardController.current
     val focus = remember { FocusRequester() }
@@ -118,7 +122,7 @@ fun SearchScreen(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                error = if (e is java.io.IOException) "ネットに繋がっていないようです" else "検索できませんでした"
+                error = if (e is java.io.IOException) context.getString(R.string.search_error_offline) else context.getString(R.string.search_error_failed)
             } finally {
                 loading = false
             }
@@ -129,12 +133,12 @@ fun SearchScreen(
         val current = PlayerEngine.state.value.current
         val item = QueueStore.addMeta(result.meta, afterId = current?.id, playNext = mode != AddMode.End)
         if (item == null) {
-            onMessage("すでにキューにあります", null, null)
+            onMessage(context.getString(R.string.search_already_queued), null, null)
             return
         }
         when (mode) {
-            AddMode.End -> onMessage("キューに追加しました", "取り消す") { QueueStore.remove(item.id) }
-            AddMode.Next -> onMessage("次に再生します", "取り消す") { QueueStore.remove(item.id) }
+            AddMode.End -> onMessage(context.getString(R.string.search_added), context.getString(R.string.search_undo)) { QueueStore.remove(item.id) }
+            AddMode.Next -> onMessage(context.getString(R.string.search_will_play_next), context.getString(R.string.search_undo)) { QueueStore.remove(item.id) }
             AddMode.Now -> PlayerEngine.play(item)
         }
     }
@@ -179,12 +183,12 @@ fun SearchScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                navigationIcon = { IconButton(onClick = onBack) { Icon(painterResource(R.drawable.ic_back), contentDescription = "戻る") } },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(painterResource(R.drawable.ic_back), contentDescription = stringResource(R.string.settings_back)) } },
                 title = {
                     TextField(
                         value = query,
                         onValueChange = { query = it },
-                        placeholder = { Text("YouTube を検索、または URL を貼り付け") },
+                        placeholder = { Text(stringResource(R.string.search_placeholder)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(onSearch = { if (pastedUrl != null) onAddUrl(pastedUrl) else search(query) }),
@@ -193,7 +197,7 @@ fun SearchScreen(
                                 IconButton(onClick = {
                                     query = ""
                                     focus.requestFocus()
-                                }) { Icon(painterResource(R.drawable.ic_close), contentDescription = "消す") }
+                                }) { Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.search_clear)) }
                             }
                         },
                         colors = TextFieldDefaults.colors(
@@ -227,11 +231,11 @@ fun SearchScreen(
                     Column(Modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(error.orEmpty(), color = MaterialTheme.colorScheme.error)
                         Spacer(Modifier.height(12.dp))
-                        Button(onClick = { searchedQuery?.let(::search) }) { Text("もう一度") }
+                        Button(onClick = { searchedQuery?.let(::search) }) { Text(stringResource(R.string.search_try_again)) }
                     }
                 }
                 searchedQuery != null && results.isEmpty() -> item(key = "none") {
-                    Text("見つかりませんでした", Modifier.padding(32.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.search_no_results), Modifier.padding(32.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 else -> {
                     items(results, key = { it.meta.videoId }) { result ->
@@ -248,6 +252,7 @@ private enum class AddMode { End, Next, Now }
 
 @Composable
 private fun ResultRow(result: SearchResult, queued: Boolean, onAdd: (AddMode) -> Unit) {
+    val context = LocalContext.current
     var menuOpen by remember { mutableStateOf(false) }
     val meta = result.meta
     Row(
@@ -265,7 +270,7 @@ private fun ResultRow(result: SearchResult, queued: Boolean, onAdd: (AddMode) ->
         Column(Modifier.weight(1f)) {
             Text(meta.title, style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Text(meta.uploader, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-            val detail = listOfNotNull(formatViews(result.viewCount), result.uploadedText).joinToString(" · ")
+            val detail = listOfNotNull(formatViews(context, result.viewCount), result.uploadedText).joinToString(" · ")
             if (detail.isNotEmpty()) {
                 Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
             }
@@ -273,30 +278,30 @@ private fun ResultRow(result: SearchResult, queued: Boolean, onAdd: (AddMode) ->
         if (queued) {
             Icon(
                 painterResource(R.drawable.ic_check),
-                contentDescription = "キューにあります",
+                contentDescription = stringResource(R.string.search_in_queue),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(12.dp),
             )
         } else {
-            IconButton(onClick = { onAdd(AddMode.End) }) { Icon(painterResource(R.drawable.ic_add), contentDescription = "キューに追加") }
+            IconButton(onClick = { onAdd(AddMode.End) }) { Icon(painterResource(R.drawable.ic_add), contentDescription = stringResource(R.string.search_add_to_queue)) }
         }
         Box {
-            IconButton(onClick = { menuOpen = true }) { Icon(painterResource(R.drawable.ic_more), contentDescription = "メニュー") }
+            IconButton(onClick = { menuOpen = true }) { Icon(painterResource(R.drawable.ic_more), contentDescription = stringResource(R.string.search_menu)) }
             DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                 DropdownMenuItem(
-                    text = { Text("今すぐ再生") },
+                    text = { Text(stringResource(R.string.search_play_now)) },
                     leadingIcon = { Icon(painterResource(R.drawable.ic_play), null) },
                     enabled = !queued,
                     onClick = { onAdd(AddMode.Now); menuOpen = false },
                 )
                 DropdownMenuItem(
-                    text = { Text("次に再生") },
+                    text = { Text(stringResource(R.string.search_play_next)) },
                     leadingIcon = { Icon(painterResource(R.drawable.ic_play_next), null) },
                     enabled = !queued,
                     onClick = { onAdd(AddMode.Next); menuOpen = false },
                 )
                 DropdownMenuItem(
-                    text = { Text("キューの最後に追加") },
+                    text = { Text(stringResource(R.string.search_add_to_end)) },
                     leadingIcon = { Icon(painterResource(R.drawable.ic_add), null) },
                     enabled = !queued,
                     onClick = { onAdd(AddMode.End); menuOpen = false },
@@ -317,8 +322,8 @@ private fun PastedUrlCard(url: String, onAdd: () -> Unit) {
             if (videoId != null) Thumbnail(thumbnailUrlOf(videoId), Modifier.width(112.dp).aspectRatio(16f / 9f))
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(if (videoId != null) "この動画をキューに追加" else "この再生リストをまとめて追加（最大 200 本）", style = MaterialTheme.typography.titleSmall)
-                OutlinedButton(onClick = onAdd) { Text("追加") }
+                Text(if (videoId != null) stringResource(R.string.search_add_this_video) else stringResource(R.string.search_add_this_playlist), style = MaterialTheme.typography.titleSmall)
+                OutlinedButton(onClick = onAdd) { Text(stringResource(R.string.search_add)) }
             }
         }
     }
@@ -331,12 +336,17 @@ private fun CenteredProgress() {
     }
 }
 
-/** 再生回数を日本語の短い形に（1.2万回視聴・3.4億回視聴）。取れていなければ null。 */
-private fun formatViews(count: Long): String? = when {
+/** View count as a short label (e.g. 1.2K views, 3.4M views). null if unavailable. */
+private fun formatViews(context: Context, count: Long): String? = when {
     count < 0 -> null
-    count < 10_000 -> "%,d 回視聴".format(count)
-    count < 100_000_000 -> "%s万回視聴".format(trimDecimal(count / 10_000.0))
-    else -> "%s億回視聴".format(trimDecimal(count / 100_000_000.0))
+    else -> context.getString(R.string.search_views, compactNumber(count))
+}
+
+private fun compactNumber(n: Long): String = when {
+    n < 1_000 -> "%,d".format(n)
+    n < 1_000_000 -> "%sK".format(trimDecimal(n / 1_000.0))
+    n < 1_000_000_000 -> "%sM".format(trimDecimal(n / 1_000_000.0))
+    else -> "%sB".format(trimDecimal(n / 1_000_000_000.0))
 }
 
 private fun trimDecimal(value: Double): String = if (value >= 10) value.toLong().toString() else "%.1f".format(value).removeSuffix(".0")

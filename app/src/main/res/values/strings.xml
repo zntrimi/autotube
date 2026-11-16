@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Queue screen -->
+    <string name="queue_find_videos">Find videos</string>
+    <string name="queue_settings">Settings</string>
+    <string name="queue_title">Queue</string>
+    <plurals name="queue_item_count">
+        <item quantity="one">%d video</item>
+        <item quantity="other">%d videos</item>
+    </plurals>
+    <string name="queue_remaining">%1$s · %2$s left</string>
+    <plurals name="queue_watched_count">
+        <item quantity="one">Watched: %d video</item>
+        <item quantity="other">Watched: %d videos</item>
+    </plurals>
+    <plurals name="queue_watched_deleted">
+        <item quantity="one">Deleted %d watched video</item>
+        <item quantity="other">Deleted %d watched videos</item>
+    </plurals>
+    <string name="queue_delete_all">Delete all</string>
+    <string name="queue_playing_in_car">Playing in car</string>
+    <string name="queue_status_retry">Couldn\'t play. Retrying automatically.</string>
+    <string name="queue_status_waiting">Waiting for connection (resumes when it\'s back)</string>
+    <string name="queue_status_fetching">Fetching video…</string>
+    <string name="queue_status_loading">Loading…</string>
+    <string name="queue_retry_now">Retry now</string>
+    <string name="queue_next_video">Next video</string>
+    <string name="queue_previous">Previous</string>
+    <string name="queue_back_10s">Back 10 seconds</string>
+    <string name="queue_pause">Pause</string>
+    <string name="queue_play">Play</string>
+    <string name="queue_forward_30s">Forward 30 seconds</string>
+    <string name="queue_next">Next</string>
+    <string name="queue_delete">Delete</string>
+    <string name="queue_mark_unwatched">Mark as unwatched</string>
+    <string name="queue_watched">Watched</string>
+    <string name="queue_paused">Paused</string>
+    <string name="queue_now_playing">Now playing</string>
+    <string name="queue_unplayable">Can\'t play (deleted, private, etc.)</string>
+    <string name="queue_resume_from">From %s</string>
+    <string name="queue_menu">Menu</string>
+    <string name="queue_reorder">Reorder</string>
+    <string name="queue_play_next">Play next</string>
+    <string name="queue_move_to_top">Move to top</string>
+    <string name="queue_mark_watched">Mark as watched</string>
+    <string name="queue_open_in_youtube">Open in YouTube</string>
+    <string name="queue_deleted">Deleted</string>
+    <string name="queue_undo">Undo</string>
+    <string name="queue_marked_unwatched">Marked as unwatched</string>
+    <string name="queue_marked_watched">Marked as watched</string>
+    <string name="queue_add_copied_video">Add copied video</string>
+    <string name="queue_add_copied_playlist">Add copied playlist</string>
+    <string name="queue_close">Close</string>
+    <string name="queue_add">Add</string>
+    <string name="queue_empty_title">The queue is empty</string>
+    <string name="queue_empty_hint">Search and add videos. You can also add from the YouTube app\'s Share menu, or by copying a URL and then opening AutoTube.</string>
+
+    <!-- Settings screen -->
+    <string name="settings_back">Back</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_playback">Playback</string>
+    <string name="settings_max_quality">Max quality</string>
+    <string name="settings_quality_label">%dp</string>
+    <string name="settings_quality_hint">Applies from the next video. Lowered automatically when the connection is weak.</string>
+    <string name="settings_autoplay">Auto-play from where you left off when connected to the car</string>
+    <string name="settings_sponsorblock_title">Skip sponsor segments and self-promotion</string>
+    <string name="settings_sponsorblock_detail">Uses SponsorBlock\'s public data (the video ID is sent)</string>
+    <string name="settings_section_stability">Keeping it stable</string>
+    <string name="settings_battery_title">Exclude from battery optimization</string>
+    <string name="settings_battery_done">Already excluded</string>
+    <string name="settings_battery_hint">Less likely to be stopped while the screen is off</string>
+    <string name="settings_section_trouble">When something goes wrong</string>
+    <string name="settings_trouble_intro">Normally it recovers on its own. To fix it by hand, press ▶ (in the car or on the phone) to reload from the same position. If that doesn\'t help, try these in order.</string>
+    <string name="settings_rebuild_title">1. Rebuild playback</string>
+    <string name="settings_rebuild_detail">Re-fetches the video and resumes at the same position</string>
+    <string name="settings_rebuilding">Rebuilding playback…</string>
+    <string name="settings_reset_title">2. Reset playback</string>
+    <string name="settings_reset_detail">Stops playback and discards all fetched data (the queue and position are kept)</string>
+    <string name="settings_reset_done">Reset done. Press ▶ to resume.</string>
+    <string name="settings_restart_title">3. Restart app</string>
+    <string name="settings_restart_detail">The queue and playback position are kept</string>
+    <string name="settings_logs_title">View / share logs</string>
+    <string name="settings_logs_detail">If it isn\'t fixed, sharing from here lets us track down the cause</string>
+    <string name="settings_clear_queue_title">Clear the queue</string>
+    <string name="settings_aa_hint">Android Auto: turning on \"Unknown sources\" in developer settings makes AutoTube show up in the launcher.</string>
+    <string name="settings_restart_confirm_title">Restart the app?</string>
+    <string name="settings_restart_confirm_text">The queue and playback position are kept.</string>
+    <string name="settings_restart_confirm_ok">Restart</string>
+    <string name="settings_clear_confirm_title">Clear the queue?</string>
+    <string name="settings_clear_confirm_text">All videos will be removed.</string>
+    <string name="settings_clear_confirm_ok">Clear</string>
+    <string name="settings_queue_cleared">Queue cleared</string>
+    <string name="settings_undo">Undo</string>
+    <string name="settings_cancel">Cancel</string>
+
+    <!-- Search screen -->
+    <string name="search_error_offline">You don\'t seem to be online</string>
+    <string name="search_error_failed">Search failed</string>
+    <string name="search_already_queued">Already in the queue</string>
+    <string name="search_added">Added to the queue</string>
+    <string name="search_will_play_next">Will play next</string>
+    <string name="search_undo">Undo</string>
+    <string name="search_placeholder">Search YouTube, or paste a URL</string>
+    <string name="search_clear">Clear</string>
+    <string name="search_try_again">Try again</string>
+    <string name="search_no_results">No results found</string>
+    <string name="search_in_queue">In the queue</string>
+    <string name="search_add_to_queue">Add to queue</string>
+    <string name="search_menu">Menu</string>
+    <string name="search_play_now">Play now</string>
+    <string name="search_play_next">Play next</string>
+    <string name="search_add_to_end">Add to end of queue</string>
+    <string name="search_add_this_video">Add this video to the queue</string>
+    <string name="search_add_this_playlist">Add this whole playlist (up to 200)</string>
+    <string name="search_add">Add</string>
+    <!-- View count: %s is the formatted number (e.g. 1,234 or 1.2K or 3.4M) -->
+    <string name="search_views">%s views</string>
+
+    <!-- Main activity (snackbar messages) -->
+    <string name="main_adding">Adding…</string>
+    <string name="main_play_next_title">Play next: %s</string>
+    <string name="main_added_title">Added: %s</string>
+    <string name="main_undo">Undo</string>
+    <string name="main_already_queued">Already in the queue</string>
+    <plurals name="main_added_count">
+        <item quantity="one">%1$d added (%2$d duplicate)</item>
+        <item quantity="other">%1$d added (%2$d duplicates)</item>
+    </plurals>
+    <string name="main_add_failed">Can\'t add: %s</string>
+</resources>

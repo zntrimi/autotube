@@ -53,18 +53,21 @@ object YouTubeSearch {
         .filter { it.streamType == StreamType.VIDEO_STREAM && it.duration > 0 }
         .mapNotNull { item ->
             val meta = YouTubeExtractor.metaOf(item) ?: return@mapNotNull null
-            SearchResult(meta, item.viewCount, item.uploadDate?.instant?.let(::relativeJapanese))
+            SearchResult(meta, item.viewCount, item.uploadDate?.instant?.let(::relativeTime))
         }
 
-    /** YouTube の投稿日（英語の "3 weeks ago"）を日本語の「3週間前」に。 */
-    private fun relativeJapanese(instant: Instant): String {
+    /** Turns an upload date into a short relative label (e.g. "3 weeks ago"). */
+    private fun relativeTime(instant: Instant): String {
         val days = Duration.between(instant, Instant.now()).toDays()
         return when {
-            days < 1 -> "今日"
-            days < 7 -> "${days}日前"
-            days < 30 -> "${days / 7}週間前"
-            days < 365 -> "${days / 30}か月前"
-            else -> "${days / 365}年前"
+            days < 1 -> "today"
+            days < 7 -> plural(days, "day")
+            days < 30 -> plural(days / 7, "week")
+            days < 365 -> plural(days / 30, "month")
+            else -> plural(days / 365, "year")
         }
     }
+
+    private fun plural(n: Long, unit: String): String =
+        "$n $unit${if (n == 1L) "" else "s"} ago"
 }

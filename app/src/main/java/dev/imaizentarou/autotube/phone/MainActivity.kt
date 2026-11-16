@@ -30,6 +30,7 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import androidx.annotation.OptIn
 import dev.imaizentarou.autotube.AppLog
+import dev.imaizentarou.autotube.R
 import dev.imaizentarou.autotube.phone.ui.AutoTubeTheme
 import dev.imaizentarou.autotube.phone.ui.ClipboardCandidate
 import dev.imaizentarou.autotube.phone.ui.QueueScreen
@@ -177,7 +178,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun addToQueue(text: String, playNext: Boolean = false) {
-        messages.trySend(UiMessage("追加中…"))
+        messages.trySend(UiMessage(getString(R.string.main_adding)))
         lifecycleScope.launch {
             QueueStore.add(text)
                 .onSuccess { result ->
@@ -185,15 +186,15 @@ class MainActivity : ComponentActivity() {
                     if (single != null && playNext) QueueStore.moveAfter(single.id, PlayerEngine.state.value.current?.id)
                     val message = when {
                         single != null && result.skipped == 0 -> UiMessage(
-                            if (playNext) "次に再生: ${single.title}" else "追加: ${single.title}",
-                            "取り消す",
+                            if (playNext) getString(R.string.main_play_next_title, single.title) else getString(R.string.main_added_title, single.title),
+                            getString(R.string.main_undo),
                         ) { QueueStore.remove(single.id) }
-                        result.added.isEmpty() -> UiMessage("すでにキューにあります")
-                        else -> UiMessage("${result.added.size} 本追加（${result.skipped} 本は重複）")
+                        result.added.isEmpty() -> UiMessage(getString(R.string.main_already_queued))
+                        else -> UiMessage(resources.getQuantityString(R.plurals.main_added_count, result.added.size, result.added.size, result.skipped))
                     }
                     messages.trySend(message)
                 }
-                .onFailure { messages.trySend(UiMessage("追加できません: ${it.message}")) }
+                .onFailure { messages.trySend(UiMessage(getString(R.string.main_add_failed, it.message))) }
         }
     }
 

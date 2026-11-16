@@ -61,7 +61,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -101,6 +104,7 @@ fun QueueScreen(
     onOpenInYouTube: (QueueItem) -> Unit,
     onMessage: (text: String, actionLabel: String?, action: (() -> Unit)?) -> Unit,
 ) {
+    val context = LocalContext.current
     val state by PlayerEngine.state.collectAsStateWithLifecycle()
     val items by QueueStore.items.collectAsStateWithLifecycle()
     val current = state.current
@@ -124,12 +128,15 @@ fun QueueScreen(
         val index = QueueStore.items.value.indexOfFirst { it.id == item.id }
         if (item.id == current?.id) PlayerEngine.stop()
         QueueStore.remove(item.id)
-        onMessage("削除しました", "元に戻す") { QueueStore.insert(item, index) }
+        onMessage(context.getString(R.string.queue_deleted), context.getString(R.string.queue_undo)) { QueueStore.insert(item, index) }
     }
 
     fun toggleWatched(item: QueueItem) {
         QueueStore.update(item.id) { it.copy(watched = !it.watched, positionMs = 0) }
-        onMessage(if (item.watched) "未視聴に戻しました" else "視聴済みにしました", "元に戻す") {
+        onMessage(
+            if (item.watched) context.getString(R.string.queue_marked_unwatched) else context.getString(R.string.queue_marked_watched),
+            context.getString(R.string.queue_undo),
+        ) {
             QueueStore.update(item.id) { item }
         }
     }
@@ -147,8 +154,8 @@ fun QueueScreen(
             TopAppBar(
                 title = { Text("AutoTube", fontWeight = FontWeight.Bold) },
                 actions = {
-                    IconButton(onClick = onOpenSearch) { Icon(painterResource(R.drawable.ic_search), contentDescription = "動画を探す") }
-                    IconButton(onClick = onOpenSettings) { Icon(painterResource(R.drawable.ic_settings), contentDescription = "設定") }
+                    IconButton(onClick = onOpenSearch) { Icon(painterResource(R.drawable.ic_search), contentDescription = stringResource(R.string.queue_find_videos)) }
+                    IconButton(onClick = onOpenSettings) { Icon(painterResource(R.drawable.ic_settings), contentDescription = stringResource(R.string.queue_settings)) }
                 },
             )
         },
@@ -176,9 +183,11 @@ fun QueueScreen(
                             val watchedMs = if (item.id == current?.id) positionMs else item.positionMs
                             (item.durationSec - watchedMs / 1000).coerceAtLeast(0)
                         }
+                        val countText = pluralStringResource(R.plurals.queue_item_count, upcoming.size, upcoming.size)
+                        val remaining = QueueItem.formatSeconds(remainingSec)
                         SectionHeader(
-                            title = "キュー",
-                            detail = "${upcoming.size} 本" + QueueItem.formatSeconds(remainingSec).let { if (it.isEmpty()) "" else " · 残り $it" },
+                            title = stringResource(R.string.queue_title),
+                            detail = if (remaining.isEmpty()) countText else stringResource(R.string.queue_remaining, countText, remaining),
                         )
                     }
                     items(upcoming, key = { it.id }) { item ->
@@ -217,12 +226,15 @@ fun QueueScreen(
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                                 Spacer(Modifier.width(8.dp))
-                                Text("視聴済み ${watched.size} 本", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                                Text(pluralStringResource(R.plurals.queue_watched_count, watched.size, watched.size), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
                                 TextButton(onClick = {
                                     val snapshot = QueueStore.items.value
                                     QueueStore.removeWatched()
-                                    onMessage("視聴済み ${watched.size} 本を削除しました", "元に戻す") { QueueStore.replaceAll(snapshot) }
-                                }) { Text("すべて削除") }
+                                    onMessage(
+                                        context.resources.getQuantityString(R.plurals.queue_watched_deleted, watched.size, watched.size),
+                                        context.getString(R.string.queue_undo),
+                                    ) { QueueStore.replaceAll(snapshot) }
+                                }) { Text(stringResource(R.string.queue_delete_all)) }
                             }
                         }
                         if (watchedExpanded) {
@@ -261,7 +273,7 @@ private fun NowPlayingPanel(state: PlayerState, current: QueueItem, playerView: 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(painterResource(R.drawable.ic_car), null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(4.dp))
-                        Text("車で再生中", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(R.string.queue_playing_in_car), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                     }
                     Text(current.title, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     Text(current.uploader, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
@@ -299,10 +311,10 @@ private fun NowPlayingPanel(state: PlayerState, current: QueueItem, playerView: 
 private fun StatusLine(state: PlayerState) {
     val error = state.error
     val (text, icon) = when {
-        error != null -> "再生できませんでした。自動でやり直します" to R.drawable.ic_close
-        state.offline && (state.isLoading || state.isBuffering) -> "回線待ち（戻ったら続きから）" to R.drawable.ic_wifi_off
-        state.isLoading -> "動画を取得中…" to null
-        state.playWhenReady && state.isBuffering -> "読み込み中…" to null
+        error != null -> stringResource(R.string.queue_status_retry) to R.drawable.ic_close
+        state.offline && (state.isLoading || state.isBuffering) -> stringResource(R.string.queue_status_waiting) to R.drawable.ic_wifi_off
+        state.isLoading -> stringResource(R.string.queue_status_fetching) to null
+        state.playWhenReady && state.isBuffering -> stringResource(R.string.queue_status_loading) to null
         else -> return
     }
     Column(Modifier.padding(top = 8.dp)) {
@@ -322,8 +334,8 @@ private fun StatusLine(state: PlayerState) {
         }
         if (error != null) {
             Row {
-                TextButton(onClick = { PlayerEngine.restartCurrent() }) { Text("今すぐやり直す") }
-                if (PlayerEngine.hasNext()) TextButton(onClick = { PlayerEngine.playNext() }) { Text("次の動画へ") }
+                TextButton(onClick = { PlayerEngine.restartCurrent() }) { Text(stringResource(R.string.queue_retry_now)) }
+                if (PlayerEngine.hasNext()) TextButton(onClick = { PlayerEngine.playNext() }) { Text(stringResource(R.string.queue_next_video)) }
             }
         }
     }
@@ -361,8 +373,8 @@ private fun Controls(state: PlayerState) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        ControlButton(R.drawable.ic_skip_previous, "前へ") { PlayerEngine.playPrevious() }
-        ControlButton(R.drawable.ic_fast_rewind, "10 秒戻る") { PlayerEngine.seekBy(-10_000) }
+        ControlButton(R.drawable.ic_skip_previous, stringResource(R.string.queue_previous)) { PlayerEngine.playPrevious() }
+        ControlButton(R.drawable.ic_fast_rewind, stringResource(R.string.queue_back_10s)) { PlayerEngine.seekBy(-10_000) }
         FilledIconButton(
             onClick = { PlayerEngine.togglePlayPause() },
             modifier = Modifier.size(64.dp),
@@ -370,12 +382,12 @@ private fun Controls(state: PlayerState) {
         ) {
             Icon(
                 painterResource(if (state.playWhenReady) R.drawable.ic_pause else R.drawable.ic_play),
-                contentDescription = if (state.playWhenReady) "一時停止" else "再生",
+                contentDescription = if (state.playWhenReady) stringResource(R.string.queue_pause) else stringResource(R.string.queue_play),
                 modifier = Modifier.size(32.dp),
             )
         }
-        ControlButton(R.drawable.ic_fast_forward, "30 秒進む") { PlayerEngine.seekBy(30_000) }
-        ControlButton(R.drawable.ic_skip_next, "次へ") { PlayerEngine.playNext() }
+        ControlButton(R.drawable.ic_fast_forward, stringResource(R.string.queue_forward_30s)) { PlayerEngine.seekBy(30_000) }
+        ControlButton(R.drawable.ic_skip_next, stringResource(R.string.queue_next)) { PlayerEngine.playNext() }
     }
 }
 
@@ -428,9 +440,9 @@ private fun SwipeableRow(item: QueueItem, onSwipeRight: () -> Unit, onSwipeLeft:
             ) {
                 if (swipe.dismissDirection != SwipeToDismissBoxValue.Settled) {
                     val (icon, label) = when {
-                        !toRight -> R.drawable.ic_delete to "削除"
-                        item.watched -> R.drawable.ic_undo to "未視聴に戻す"
-                        else -> R.drawable.ic_check to "視聴済み"
+                        !toRight -> R.drawable.ic_delete to stringResource(R.string.queue_delete)
+                        item.watched -> R.drawable.ic_undo to stringResource(R.string.queue_mark_unwatched)
+                        else -> R.drawable.ic_check to stringResource(R.string.queue_watched)
                     }
                     Icon(painterResource(icon), null)
                     Spacer(Modifier.width(8.dp))
@@ -483,7 +495,7 @@ private fun QueueRow(
             Column(Modifier.weight(1f)) {
                 if (isCurrent) {
                     Text(
-                        if (paused) "一時停止中" else "再生中",
+                        if (paused) stringResource(R.string.queue_paused) else stringResource(R.string.queue_now_playing),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
@@ -493,22 +505,22 @@ private fun QueueRow(
                 val detail = listOfNotNull(
                     item.uploader.takeIf { it.isNotBlank() },
                     when {
-                        item.unavailable -> "再生できません（削除・非公開など）"
-                        item.watched -> "視聴済み"
-                        item.resumePositionMs > 0 && !isCurrent -> "${QueueItem.formatSeconds(item.resumePositionMs / 1000)} から"
+                        item.unavailable -> stringResource(R.string.queue_unplayable)
+                        item.watched -> stringResource(R.string.queue_watched)
+                        item.resumePositionMs > 0 && !isCurrent -> stringResource(R.string.queue_resume_from, QueueItem.formatSeconds(item.resumePositionMs / 1000))
                         else -> null
                     },
                 ).joinToString(" · ")
                 Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Box {
-                IconButton(onClick = { menuOpen = true }) { Icon(painterResource(R.drawable.ic_more), contentDescription = "メニュー") }
+                IconButton(onClick = { menuOpen = true }) { Icon(painterResource(R.drawable.ic_more), contentDescription = stringResource(R.string.queue_menu)) }
                 DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) { menu { menuOpen = false } }
             }
             if (dragHandle != null) {
                 Icon(
                     painterResource(R.drawable.ic_drag),
-                    contentDescription = "並べ替え",
+                    contentDescription = stringResource(R.string.queue_reorder),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = dragHandle.padding(horizontal = 8.dp, vertical = 12.dp),
                 )
@@ -527,14 +539,14 @@ private fun ItemMenuEntries(
     onOpenInYouTube: (QueueItem) -> Unit,
 ) {
     if (item.id != current?.id) {
-        MenuEntry(R.drawable.ic_play_next, "次に再生") { QueueStore.moveAfter(item.id, current?.id); dismiss() }
+        MenuEntry(R.drawable.ic_play_next, stringResource(R.string.queue_play_next)) { QueueStore.moveAfter(item.id, current?.id); dismiss() }
     }
-    MenuEntry(R.drawable.ic_to_top, "先頭へ移動") { QueueStore.moveToTop(item.id); dismiss() }
-    MenuEntry(if (item.watched) R.drawable.ic_undo else R.drawable.ic_check, if (item.watched) "未視聴に戻す" else "視聴済みにする") {
+    MenuEntry(R.drawable.ic_to_top, stringResource(R.string.queue_move_to_top)) { QueueStore.moveToTop(item.id); dismiss() }
+    MenuEntry(if (item.watched) R.drawable.ic_undo else R.drawable.ic_check, if (item.watched) stringResource(R.string.queue_mark_unwatched) else stringResource(R.string.queue_mark_watched)) {
         onToggleWatched(item); dismiss()
     }
-    MenuEntry(R.drawable.ic_open_in_new, "YouTube で開く") { onOpenInYouTube(item); dismiss() }
-    MenuEntry(R.drawable.ic_delete, "削除") { onRemove(item); dismiss() }
+    MenuEntry(R.drawable.ic_open_in_new, stringResource(R.string.queue_open_in_youtube)) { onOpenInYouTube(item); dismiss() }
+    MenuEntry(R.drawable.ic_delete, stringResource(R.string.queue_delete)) { onRemove(item); dismiss() }
 }
 
 @Composable
@@ -570,16 +582,16 @@ private fun ClipboardCard(candidate: ClipboardCandidate, onAdd: (playNext: Boole
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    if (candidate.videoId != null) "コピーした動画を追加" else "コピーした再生リストを追加",
+                    if (candidate.videoId != null) stringResource(R.string.queue_add_copied_video) else stringResource(R.string.queue_add_copied_playlist),
                     style = MaterialTheme.typography.titleSmall,
                 )
                 Text(candidate.url, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            IconButton(onClick = onDismiss) { Icon(painterResource(R.drawable.ic_close), contentDescription = "閉じる") }
+            IconButton(onClick = onDismiss) { Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.queue_close)) }
         }
         Row(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = { onAdd(false) }) { Text("追加") }
-            if (candidate.videoId != null) OutlinedButton(onClick = { onAdd(true) }) { Text("次に再生") }
+            Button(onClick = { onAdd(false) }) { Text(stringResource(R.string.queue_add)) }
+            if (candidate.videoId != null) OutlinedButton(onClick = { onAdd(true) }) { Text(stringResource(R.string.queue_play_next)) }
         }
     }
 }
@@ -589,11 +601,10 @@ private fun EmptyQueue(onOpenSearch: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(painterResource(R.drawable.ic_car), null, Modifier.size(56.dp), tint = MaterialTheme.colorScheme.primary)
         Spacer(Modifier.height(16.dp))
-        Text("キューは空です", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.queue_empty_title), style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
         Text(
-            "検索して追加できます。YouTube アプリの「共有」で AutoTube を選んでも、" +
-                "URL をコピーしてから開いても追加できます。",
+            stringResource(R.string.queue_empty_hint),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -602,7 +613,7 @@ private fun EmptyQueue(onOpenSearch: () -> Unit) {
         Button(onClick = onOpenSearch) {
             Icon(painterResource(R.drawable.ic_search), null, Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
-            Text("動画を探す")
+            Text(stringResource(R.string.queue_find_videos))
         }
     }
 }

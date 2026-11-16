@@ -67,6 +67,31 @@ adb install -r -i com.android.vending AutoTube.apk
 
 You need to install **every update the same way**. Opening an APK on the phone to update it changes the installer, and the app disappears from the car.
 
+> [!IMPORTANT]
+> **This no longer works on recent Android Auto (observed on 18.x, and reported from 17.7).** Newer Android Auto checks the *initiating* installer (`getInstallSourceInfo().getInitiatingPackageName()`), not the installer of record set by `-i`. For an adb install the initiator is always `com.android.shell`, so the Play check fails and the app is denied:
+> ```
+> CAR.VALIDATOR: Package DENIED; failed all other checks [com.autotube.zentaro]
+> ```
+> On these versions, use Option 1b below instead.
+
+### Option 1b: install with KingInstaller + Shizuku (no root, no cost)
+
+On recent Android Auto, the app has to be installed by a flow where the **initiating** package is the system package installer and the **installer of record** is the Play Store. [KingInstaller](https://github.com/fcaronte/KingInstaller) does exactly this, driven over [Shizuku](https://github.com/RikkaApps/Shizuku) — no root, and no PC needed after the one-time Shizuku start.
+
+1. Install [Shizuku](https://github.com/RikkaApps/Shizuku) and start it (via *Wireless debugging* on the phone, or `adb`). It must be restarted after each reboot.
+2. Install [KingInstaller](https://github.com/fcaronte/KingInstaller/releases).
+3. In KingInstaller: turn on **Shizuku**, pick `AutoTube-<version>.apk`, and tap **Install as king**. Approve the Shizuku prompt and the system installer dialog.
+4. Check the install source:
+   ```bash
+   adb shell dumpsys package com.autotube.zentaro | grep -E "installerPackageName|initiatingPackageName"
+   # expected:
+   #   installerPackageName=com.android.vending
+   #   initiatingPackageName=com.google.android.packageinstaller
+   ```
+5. In Android Auto → *Customize launcher*, AutoTube now appears. As with Option 1, install **every update the same way** — a plain sideload resets the installer record and the app disappears from the car.
+
+Verified on a Pixel 7 Pro (Android 17, Android Auto 18.0.664264): the app showed up both in *Customize launcher* and on the head unit.
+
 ### Option 2: your own Play Console internal testing track
 
 With a Google Play developer account (one-time US$25 fee) you can upload your own build to the *internal testing* track and install it from Play. Internal testing has no review, and updates then only need the phone.

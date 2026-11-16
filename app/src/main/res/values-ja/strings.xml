@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- キュー画面 -->
+    <string name="queue_find_videos">動画を探す</string>
+    <string name="queue_settings">設定</string>
+    <string name="queue_title">キュー</string>
+    <plurals name="queue_item_count">
+        <item quantity="other">%d 本</item>
+    </plurals>
+    <string name="queue_remaining">%1$s · 残り %2$s</string>
+    <plurals name="queue_watched_count">
+        <item quantity="other">視聴済み %d 本</item>
+    </plurals>
+    <plurals name="queue_watched_deleted">
+        <item quantity="other">視聴済み %d 本を削除しました</item>
+    </plurals>
+    <string name="queue_delete_all">すべて削除</string>
+    <string name="queue_playing_in_car">車で再生中</string>
+    <string name="queue_status_retry">再生できませんでした。自動でやり直します</string>
+    <string name="queue_status_waiting">回線待ち（戻ったら続きから）</string>
+    <string name="queue_status_fetching">動画を取得中…</string>
+    <string name="queue_status_loading">読み込み中…</string>
+    <string name="queue_retry_now">今すぐやり直す</string>
+    <string name="queue_next_video">次の動画へ</string>
+    <string name="queue_previous">前へ</string>
+    <string name="queue_back_10s">10 秒戻る</string>
+    <string name="queue_pause">一時停止</string>
+    <string name="queue_play">再生</string>
+    <string name="queue_forward_30s">30 秒進む</string>
+    <string name="queue_next">次へ</string>
+    <string name="queue_delete">削除</string>
+    <string name="queue_mark_unwatched">未視聴に戻す</string>
+    <string name="queue_watched">視聴済み</string>
+    <string name="queue_paused">一時停止中</string>
+    <string name="queue_now_playing">再生中</string>
+    <string name="queue_unplayable">再生できません（削除・非公開など）</string>
+    <string name="queue_resume_from">%s から</string>
+    <string name="queue_menu">メニュー</string>
+    <string name="queue_reorder">並べ替え</string>
+    <string name="queue_play_next">次に再生</string>
+    <string name="queue_move_to_top">先頭へ移動</string>
+    <string name="queue_mark_watched">視聴済みにする</string>
+    <string name="queue_open_in_youtube">YouTube で開く</string>
+    <string name="queue_deleted">削除しました</string>
+    <string name="queue_undo">元に戻す</string>
+    <string name="queue_marked_unwatched">未視聴に戻しました</string>
+    <string name="queue_marked_watched">視聴済みにしました</string>
+    <string name="queue_add_copied_video">コピーした動画を追加</string>
+    <string name="queue_add_copied_playlist">コピーした再生リストを追加</string>
+    <string name="queue_close">閉じる</string>
+    <string name="queue_add">追加</string>
+    <string name="queue_empty_title">キューは空です</string>
+    <string name="queue_empty_hint">検索して追加できます。YouTube アプリの「共有」で AutoTube を選んでも、URL をコピーしてから開いても追加できます。</string>
+
+    <!-- 設定画面 -->
+    <string name="settings_back">戻る</string>
+    <string name="settings_title">設定</string>
+    <string name="settings_section_playback">再生</string>
+    <string name="settings_max_quality">画質の上限</string>
+    <string name="settings_quality_label">%dp</string>
+    <string name="settings_quality_hint">次に再生する動画から効きます。回線が細いときは自動で下げます。</string>
+    <string name="settings_autoplay">車に繋いだら続きから自動再生</string>
+    <string name="settings_sponsorblock_title">スポンサー枠・宣伝を飛ばす</string>
+    <string name="settings_sponsorblock_detail">SponsorBlock の公開データを使います（動画 ID が送られます）</string>
+    <string name="settings_section_stability">安定して動かすために</string>
+    <string name="settings_battery_title">バッテリー最適化から外す</string>
+    <string name="settings_battery_done">外してあります</string>
+    <string name="settings_battery_hint">画面を消したときに止められにくくなります</string>
+    <string name="settings_section_trouble">困ったとき</string>
+    <string name="settings_trouble_intro">止まっても、ふだんは自動で立て直します。手で直すときは、車でもスマホでも ▶ を押せば続きから読み込み直します。それでも直らなければ、上から順に試してください。</string>
+    <string name="settings_rebuild_title">1. 再生を立て直す</string>
+    <string name="settings_rebuild_detail">動画を取り直して、同じ位置から再生します</string>
+    <string name="settings_rebuilding">立て直しています…</string>
+    <string name="settings_reset_title">2. 再生をすべてリセット</string>
+    <string name="settings_reset_detail">再生を止めて、取得済みのデータを全部捨てます（キューと再生位置は残ります）</string>
+    <string name="settings_reset_done">リセットしました。▶ で続きから再生します</string>
+    <string name="settings_restart_title">3. アプリを再起動</string>
+    <string name="settings_restart_detail">キューと再生位置は残ります</string>
+    <string name="settings_logs_title">ログを見る・共有する</string>
+    <string name="settings_logs_detail">直らなかったときは、ここから共有してもらえれば原因を追えます</string>
+    <string name="settings_clear_queue_title">キューを空にする</string>
+    <string name="settings_aa_hint">Android Auto 側: 開発者設定で「提供元不明のアプリ」をオンにすると、ランチャーに AutoTube が出ます。</string>
+    <string name="settings_restart_confirm_title">アプリを再起動しますか？</string>
+    <string name="settings_restart_confirm_text">キューと再生位置は残ります。</string>
+    <string name="settings_restart_confirm_ok">再起動</string>
+    <string name="settings_clear_confirm_title">キューを空にしますか？</string>
+    <string name="settings_clear_confirm_text">すべての動画が消えます。</string>
+    <string name="settings_clear_confirm_ok">空にする</string>
+    <string name="settings_queue_cleared">キューを空にしました</string>
+    <string name="settings_undo">元に戻す</string>
+    <string name="settings_cancel">やめる</string>
+
+    <!-- 検索画面 -->
+    <string name="search_error_offline">ネットに繋がっていないようです</string>
+    <string name="search_error_failed">検索できませんでした</string>
+    <string name="search_already_queued">すでにキューにあります</string>
+    <string name="search_added">キューに追加しました</string>
+    <string name="search_will_play_next">次に再生します</string>
+    <string name="search_undo">取り消す</string>
+    <string name="search_placeholder">YouTube を検索、または URL を貼り付け</string>
+    <string name="search_clear">消す</string>
+    <string name="search_try_again">もう一度</string>
+    <string name="search_no_results">見つかりませんでした</string>
+    <string name="search_in_queue">キューにあります</string>
+    <string name="search_add_to_queue">キューに追加</string>
+    <string name="search_menu">メニュー</string>
+    <string name="search_play_now">今すぐ再生</string>
+    <string name="search_play_next">次に再生</string>
+    <string name="search_add_to_end">キューの最後に追加</string>
+    <string name="search_add_this_video">この動画をキューに追加</string>
+    <string name="search_add_this_playlist">この再生リストをまとめて追加（最大 200 本）</string>
+    <string name="search_add">追加</string>
+    <string name="search_views">%s 回視聴</string>
+
+    <!-- メイン画面（スナックバー） -->
+    <string name="main_adding">追加中…</string>
+    <string name="main_play_next_title">次に再生: %s</string>
+    <string name="main_added_title">追加: %s</string>
+    <string name="main_undo">取り消す</string>
+    <string name="main_already_queued">すでにキューにあります</string>
+    <plurals name="main_added_count">
+        <item quantity="other">%1$d 本追加（%2$d 本は重複）</item>
+    </plurals>
+    <string name="main_add_failed">追加できません: %s</string>
+</resources>

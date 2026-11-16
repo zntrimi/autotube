@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -73,16 +74,16 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                navigationIcon = { IconButton(onClick = onBack) { Icon(painterResource(R.drawable.ic_back), contentDescription = "戻る") } },
-                title = { Text("設定") },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(painterResource(R.drawable.ic_back), contentDescription = stringResource(R.string.settings_back)) } },
+                title = { Text(stringResource(R.string.settings_title)) },
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState())) {
-            SectionTitle("再生")
+            SectionTitle(stringResource(R.string.settings_section_playback))
             Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                Text("画質の上限", style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.settings_max_quality), style = MaterialTheme.typography.bodyLarge)
                 Spacer(Modifier.height(8.dp))
                 SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
                     Settings.maxHeightChoices.forEachIndexed { index, height ->
@@ -93,30 +94,30 @@ fun SettingsScreen(
                                 Settings.maxHeight = height
                             },
                             shape = SegmentedButtonDefaults.itemShape(index, Settings.maxHeightChoices.size),
-                        ) { Text("${height}p") }
+                        ) { Text(stringResource(R.string.settings_quality_label, height)) }
                     }
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "次に再生する動画から効きます。回線が細いときは自動で下げます。",
+                    stringResource(R.string.settings_quality_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            SwitchRow("車に繋いだら続きから自動再生", null, autoPlay) {
+            SwitchRow(stringResource(R.string.settings_autoplay), null, autoPlay) {
                 autoPlay = it
                 Settings.autoPlayOnConnect = it
             }
-            SwitchRow("スポンサー枠・宣伝を飛ばす", "SponsorBlock の公開データを使います（動画 ID が送られます）", skipSponsors) {
+            SwitchRow(stringResource(R.string.settings_sponsorblock_title), stringResource(R.string.settings_sponsorblock_detail), skipSponsors) {
                 skipSponsors = it
                 Settings.skipSponsors = it
             }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionTitle("安定して動かすために")
+            SectionTitle(stringResource(R.string.settings_section_stability))
             ActionRow(
-                title = "バッテリー最適化から外す",
-                detail = if (batteryExempt) "外してあります" else "画面を消したときに止められにくくなります",
+                title = stringResource(R.string.settings_battery_title),
+                detail = if (batteryExempt) stringResource(R.string.settings_battery_done) else stringResource(R.string.settings_battery_hint),
                 enabled = !batteryExempt,
             ) {
                 context.startActivity(
@@ -125,31 +126,30 @@ fun SettingsScreen(
             }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionTitle("困ったとき")
+            SectionTitle(stringResource(R.string.settings_section_trouble))
             Text(
-                "止まっても、ふだんは自動で立て直します。手で直すときは、車でもスマホでも ▶ を押せば続きから読み込み直します。" +
-                    "それでも直らなければ、上から順に試してください。",
+                stringResource(R.string.settings_trouble_intro),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
-            ActionRow("1. 再生を立て直す", "動画を取り直して、同じ位置から再生します") {
+            ActionRow(stringResource(R.string.settings_rebuild_title), stringResource(R.string.settings_rebuild_detail)) {
                 PlayerEngine.restartCurrent()
-                onMessage("立て直しています…", null, null)
+                onMessage(context.getString(R.string.settings_rebuilding), null, null)
             }
-            ActionRow("2. 再生をすべてリセット", "再生を止めて、取得済みのデータを全部捨てます（キューと再生位置は残ります）") {
+            ActionRow(stringResource(R.string.settings_reset_title), stringResource(R.string.settings_reset_detail)) {
                 PlayerEngine.reset()
-                onMessage("リセットしました。▶ で続きから再生します", null, null)
+                onMessage(context.getString(R.string.settings_reset_done), null, null)
             }
-            ActionRow("3. アプリを再起動", "キューと再生位置は残ります") { confirm = Confirm.Restart }
-            ActionRow("ログを見る・共有する", "直らなかったときは、ここから共有してもらえれば原因を追えます") {
+            ActionRow(stringResource(R.string.settings_restart_title), stringResource(R.string.settings_restart_detail)) { confirm = Confirm.Restart }
+            ActionRow(stringResource(R.string.settings_logs_title), stringResource(R.string.settings_logs_detail)) {
                 context.startActivity(Intent(context, LogActivity::class.java))
             }
-            ActionRow("キューを空にする", null, destructive = true) { confirm = Confirm.ClearQueue }
+            ActionRow(stringResource(R.string.settings_clear_queue_title), null, destructive = true) { confirm = Confirm.ClearQueue }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             Text(
-                "Android Auto 側: 開発者設定で「提供元不明のアプリ」をオンにすると、ランチャーに AutoTube が出ます。",
+                stringResource(R.string.settings_aa_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(16.dp),
@@ -158,14 +158,24 @@ fun SettingsScreen(
     }
 
     when (confirm) {
-        Confirm.Restart -> ConfirmDialog("アプリを再起動しますか？", "キューと再生位置は残ります。", "再起動", onDismiss = { confirm = null }) {
+        Confirm.Restart -> ConfirmDialog(
+            stringResource(R.string.settings_restart_confirm_title),
+            stringResource(R.string.settings_restart_confirm_text),
+            stringResource(R.string.settings_restart_confirm_ok),
+            onDismiss = { confirm = null },
+        ) {
             onRestart()
         }
-        Confirm.ClearQueue -> ConfirmDialog("キューを空にしますか？", "すべての動画が消えます。", "空にする", onDismiss = { confirm = null }) {
+        Confirm.ClearQueue -> ConfirmDialog(
+            stringResource(R.string.settings_clear_confirm_title),
+            stringResource(R.string.settings_clear_confirm_text),
+            stringResource(R.string.settings_clear_confirm_ok),
+            onDismiss = { confirm = null },
+        ) {
             val snapshot = QueueStore.items.value
             PlayerEngine.stop()
             QueueStore.clear()
-            onMessage("キューを空にしました", "元に戻す") { QueueStore.replaceAll(snapshot) }
+            onMessage(context.getString(R.string.settings_queue_cleared), context.getString(R.string.settings_undo)) { QueueStore.replaceAll(snapshot) }
         }
         null -> Unit
     }
@@ -228,6 +238,6 @@ private fun ConfirmDialog(title: String, text: String, confirmLabel: String, onD
                 onConfirm()
             }) { Text(confirmLabel) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("やめる") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_cancel)) } },
     )
 }

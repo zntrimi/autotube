@@ -12,7 +12,7 @@ class AutoTubeApp : Application() {
     override fun onCreate() {
         super.onCreate()
         AppLog.initialize(this)
-        NewPipe.init(OkHttpDownloader(), Localization("ja", "JP"), ContentCountry("JP"))
+        NewPipe.init(OkHttpDownloader(), Localization("en", "US"), ContentCountry("US"))
         Settings.initialize(this)
         QueueStore.initialize(this)
         PlayerEngine.initialize(this)
